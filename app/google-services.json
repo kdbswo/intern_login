@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "89794760809",
+    "project_id": "intern-login-9fc72",
+    "storage_bucket": "intern-login-9fc72.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89794760809:android:1287f94486e7ceccd152f8",
+        "android_client_info": {
+          "package_name": "com.loci.intern1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ6n_KdD4KtHRIyigRjK5gsFKZHgFLSMg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
