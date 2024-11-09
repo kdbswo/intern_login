@@ -20,19 +20,24 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             Intern1Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Main(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                Navigation()
             }
         }
     }
 }
 
 @Composable
-fun Main(name: String, modifier: Modifier = Modifier) {
+fun Login(
+    viewModel: MainViewModel = viewModel(),
+    navController: NavHostController
+) {
+
+    val loginState = viewModel.auth?.currentUser != null
+
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -52,8 +57,8 @@ fun Main(name: String, modifier: Modifier = Modifier) {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun MainPreview() {
     Intern1Theme {
-        Main("Android")
+        Navigation()
     }
 }
