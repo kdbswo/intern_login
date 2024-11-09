@@ -14,6 +14,18 @@ class MainViewModel : ViewModel() {
     private val _isLogin = MutableStateFlow<Boolean>(false)
     val isLogin: StateFlow<Boolean> = _isLogin
 
+    private val _signUpError = MutableStateFlow<String?>(null)
+    val signUpError: StateFlow<String?> = _signUpError
+
+    private val _signUpEmail = MutableStateFlow<String>("")
+    val signUpEmail: StateFlow<String> = _signUpEmail
+
+    private val _signUpPassword = MutableStateFlow<String>("")
+    val signUpPassword: StateFlow<String> = _signUpPassword
+
+    private val _signUpSuccess = MutableStateFlow(false)
+    val signUpSuccess: StateFlow<Boolean> = _signUpSuccess
+
     init {
         auth = FirebaseAuth.getInstance()
     }
@@ -24,6 +36,21 @@ class MainViewModel : ViewModel() {
                 ?.addOnCompleteListener { task ->
                     _isLogin.value = task.isSuccessful
                 }
+        }
+    }
+
+    fun signUp(email: String, password: String) {
+        viewModelScope.launch {
+            auth?.createUserWithEmailAndPassword(email, password)?.addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    _signUpEmail.value = email
+                    _signUpPassword.value = password
+                    _signUpSuccess.value = true
+                } else {
+                    _signUpError.value = task.exception?.message
+
+                }
+            }
         }
     }
 
