@@ -73,7 +73,10 @@ fun SignUpScreen(
 
         Button(
             onClick = {
-
+                viewModel.signUp(email, password)
+                navController.navigate("login") {
+                    popUpTo("signup") { inclusive = true }
+                }
             },
             modifier = Modifier.fillMaxWidth()
         ) {
