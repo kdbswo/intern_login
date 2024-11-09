@@ -11,7 +11,7 @@ fun Navigation() {
 
     NavHost(navController = navController, startDestination = "login") {
         composable("login") { Login(navController = navController) }
-        composable("signup") { SignUp(navController = navController) }
-        composable("home") { Home(navController = navController) }
+        composable("signup") { SignUpScreen(navController = navController) }
+        composable("home") { HomeScreen(navController = navController) }
     }
 }
