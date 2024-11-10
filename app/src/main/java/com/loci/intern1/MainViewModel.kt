@@ -11,8 +11,11 @@ class MainViewModel : ViewModel() {
 
     var auth: FirebaseAuth? = null
 
-    private val _isLogin = MutableStateFlow<Boolean>(false)
-    val isLogin: StateFlow<Boolean> = _isLogin
+    private val _loginSuccess = MutableStateFlow<Boolean>(false)
+    val loginSuccess: StateFlow<Boolean> = _loginSuccess
+
+    private val _loginError = MutableStateFlow<String?>(null)
+    val loginError: StateFlow<String?> = _loginError
 
     private val _signUpError = MutableStateFlow<String?>(null)
     val signUpError: StateFlow<String?> = _signUpError
@@ -32,10 +35,19 @@ class MainViewModel : ViewModel() {
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            auth?.signInWithEmailAndPassword(email, password)
-                ?.addOnCompleteListener { task ->
-                    _isLogin.value = task.isSuccessful
-                }
+            try {
+                auth?.signInWithEmailAndPassword(email, password)
+                    ?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            _loginSuccess.value = true
+                        } else {
+                            _loginError.value = task.exception?.message
+                        }
+                    }
+
+            } catch (e: Exception) {
+                _loginError.value = e.message ?: "로그인 할 수 없습니다."
+            }
         }
     }
 
@@ -60,6 +72,10 @@ class MainViewModel : ViewModel() {
 
     fun deleteSignUpError() {
         _signUpError.value = null
+    }
+
+    fun deleteLoginError() {
+        _loginError.value = null
     }
 
 

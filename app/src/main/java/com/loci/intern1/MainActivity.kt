@@ -1,6 +1,7 @@
 package com.loci.intern1
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,15 +20,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.loci.intern1.ui.theme.Intern1Theme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -52,9 +56,27 @@ fun Login(
 
     val loginState = viewModel.auth?.currentUser != null
 
+    val loginSuccess by viewModel.loginSuccess.collectAsStateWithLifecycle()
+    val loginError by viewModel.loginError.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    LaunchedEffect(loginError) {
+        loginError?.let { message ->
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            viewModel.deleteLoginError()
+        }
+    }
+
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -102,7 +124,10 @@ fun Login(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = { navController.navigate("signup") }, modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = { navController.navigate("signup") },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(text = "회원가입")
         }
 
