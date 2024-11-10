@@ -45,11 +45,11 @@ fun SignUpScreen(
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isValidEmail by remember { mutableStateOf(true) }
-    var isValidPassword by remember { mutableStateOf(true) }
 
     val signUpSuccess by viewModel.signUpSuccess.collectAsStateWithLifecycle()
     val signUpError by viewModel.signUpError.collectAsStateWithLifecycle()
+    val isValidEmail by viewModel.isValidEmail.collectAsStateWithLifecycle()
+    val isValidPassword by viewModel.isValidPassword.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     LaunchedEffect(signUpError) {
@@ -73,7 +73,7 @@ fun SignUpScreen(
             value = email,
             onValueChange = {
                 email = it
-                isValidEmail = viewModel.isValidEmail(email)
+                viewModel.isValidEmail(email)
             },
             label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
@@ -97,7 +97,7 @@ fun SignUpScreen(
             value = password,
             onValueChange = {
                 password = it
-                isValidPassword = viewModel.isValidPassword(password)
+                viewModel.isValidPassword(password)
             },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
@@ -128,7 +128,8 @@ fun SignUpScreen(
                 }
 
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = isValidEmail && isValidPassword
         ) {
             Text(text = "회원가입")
         }

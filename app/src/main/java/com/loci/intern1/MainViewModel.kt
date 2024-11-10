@@ -58,15 +58,12 @@ class MainViewModel : ViewModel() {
                         if (task.isSuccessful) {
                             _loginSuccess.value = true
                         } else {
-                            _loginError.value = convertErrorMessage(task.exception?.message)
-
-                            Log.d("error", "${task.exception?.message}")
+                            _loginError.value = convertLoginErrorMessage(task.exception?.message)
                         }
                     }
 
             } catch (e: Exception) {
-                _loginError.value = e.message ?: "로그인 할 수 없습니다."
-                Log.d("error", "${e.message}")
+                _loginError.value = convertLoginErrorMessage(e.message ?: "로그인 할 수 없습니다.")
             }
         }
     }
@@ -87,11 +84,13 @@ class MainViewModel : ViewModel() {
                             _signUpPassword.value = password
                             _signUpSuccess.value = true
                         } else {
-                            _signUpError.value = task.exception?.message
+                            _signUpError.value = convertSignUpErrorMessage(task.exception?.message)
+                            Log.d("error", "${task.exception?.message}")
                         }
                     }
             } catch (e: Exception) {
-                _signUpError.value = e.message ?: "회원가입 할 수 없습니다."
+                _signUpError.value = convertSignUpErrorMessage(e.message ?: "회원가입 할 수 없습니다.")
+                Log.d("error", "${e.message}")
             }
         }
     }
@@ -113,7 +112,7 @@ class MainViewModel : ViewModel() {
         _isValidPassword.value = password.length >= 6
     }
 
-    private fun convertErrorMessage(message: String?): String {
+    private fun convertLoginErrorMessage(message: String?): String {
         return when (message) {
             "Given String is empty or null" -> "입력된 값이 비어 있거나 잘못되었습니다."
             "The email address is badly formatted." -> "이메일 형식이 올바르지 않습니다."
@@ -122,6 +121,13 @@ class MainViewModel : ViewModel() {
             else -> "로그인 문제가 발생했습니다."
         }
     }
+    private fun convertSignUpErrorMessage(message: String?): String {
+        return when (message) {
+            "The email address is already in use by another account." -> "이미 존재하는 이메일 입니다"
+            else -> "회원가입 문제가 발생했습니다."
+        }
+    }
+
 
 
 }
