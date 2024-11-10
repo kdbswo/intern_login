@@ -41,17 +41,25 @@ class MainViewModel : ViewModel() {
 
     fun signUp(email: String, password: String) {
         viewModelScope.launch {
-            auth?.createUserWithEmailAndPassword(email, password)?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    _signUpEmail.value = email
-                    _signUpPassword.value = password
-                    _signUpSuccess.value = true
-                } else {
-                    _signUpError.value = task.exception?.message
-
-                }
+            try {
+                auth?.createUserWithEmailAndPassword(email, password)
+                    ?.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            _signUpEmail.value = email
+                            _signUpPassword.value = password
+                            _signUpSuccess.value = true
+                        } else {
+                            _signUpError.value = task.exception?.message
+                        }
+                    }
+            } catch (e: Exception) {
+                _signUpError.value = e.message ?: "회원가입 할 수 없습니다."
             }
         }
+    }
+
+    fun deleteSignUpError() {
+        _signUpError.value = null
     }
 
 
