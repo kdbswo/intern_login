@@ -5,8 +5,10 @@ import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
 
@@ -18,11 +20,11 @@ class MainViewModel : ViewModel() {
     private val _loginSuccess = MutableStateFlow<Boolean>(false)
     val loginSuccess: StateFlow<Boolean> = _loginSuccess
 
-    private val _loginError = MutableStateFlow<String?>(null)
-    val loginError: StateFlow<String?> = _loginError
+    private val _loginError = MutableSharedFlow<String?>()
+    val loginError = _loginError.asSharedFlow()
 
-    private val _signUpError = MutableStateFlow<String?>(null)
-    val signUpError: StateFlow<String?> = _signUpError
+    private val _signUpError = MutableSharedFlow<String?>()
+    val signUpError = _signUpError.asSharedFlow()
 
     private val _signUpEmail = MutableStateFlow<String>("")
     val signUpEmail: StateFlow<String> = _signUpEmail
@@ -47,7 +49,7 @@ class MainViewModel : ViewModel() {
     fun login(email: String, password: String) {
 
         if (email.isBlank() || password.isBlank()) {
-            _loginError.value = "이메일과 비밀번호를 입력해 주세요."
+            addLoginError("이메일과 비밀번호를 입력해 주세요.")
             return
         }
 
@@ -58,12 +60,12 @@ class MainViewModel : ViewModel() {
                         if (task.isSuccessful) {
                             _loginSuccess.value = true
                         } else {
-                            _loginError.value = convertLoginErrorMessage(task.exception?.message)
+                            addLoginError(convertLoginErrorMessage(task.exception?.message))
                         }
                     }
 
             } catch (e: Exception) {
-                _loginError.value = convertLoginErrorMessage(e.message ?: "로그인 할 수 없습니다.")
+                addLoginError(convertLoginErrorMessage(e.message ?: "로그인 할 수 없습니다."))
             }
         }
     }
@@ -71,7 +73,7 @@ class MainViewModel : ViewModel() {
     fun signUp(email: String, password: String) {
 
         if (email.isBlank() || password.isBlank()) {
-            _signUpError.value = "이메일과 비밀번호를 입력해 주세요."
+            addSignUpError("이메일과 비밀번호를 입력해 주세요.")
             return
         }
 
@@ -84,23 +86,35 @@ class MainViewModel : ViewModel() {
                             _signUpPassword.value = password
                             _signUpSuccess.value = true
                         } else {
-                            _signUpError.value = convertSignUpErrorMessage(task.exception?.message)
+                            addSignUpError(convertSignUpErrorMessage(task.exception?.message))
                             Log.d("error", "${task.exception?.message}")
                         }
                     }
             } catch (e: Exception) {
-                _signUpError.value = convertSignUpErrorMessage(e.message ?: "회원가입 할 수 없습니다.")
+                addSignUpError(convertSignUpErrorMessage(e.message ?: "회원가입 할 수 없습니다."))
                 Log.d("error", "${e.message}")
             }
         }
     }
 
+    private fun addSignUpError(message: String?) {
+        viewModelScope.launch {
+            _signUpError.emit(message)
+        }
+    }
+
+    private fun addLoginError(message: String?) {
+        viewModelScope.launch {
+            _loginError.emit(message)
+        }
+    }
+
     fun deleteSignUpError() {
-        _signUpError.value = null
+        addSignUpError(null)
     }
 
     fun deleteLoginError() {
-        _loginError.value = null
+        addLoginError(null)
     }
 
     fun isValidEmail(email: String) {
@@ -121,13 +135,13 @@ class MainViewModel : ViewModel() {
             else -> "로그인 문제가 발생했습니다."
         }
     }
+
     private fun convertSignUpErrorMessage(message: String?): String {
         return when (message) {
             "The email address is already in use by another account." -> "이미 존재하는 이메일 입니다"
             else -> "회원가입 문제가 발생했습니다."
         }
     }
-
 
 
 }
