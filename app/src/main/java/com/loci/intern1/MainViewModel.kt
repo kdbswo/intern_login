@@ -1,11 +1,13 @@
 package com.loci.intern1
 
+import android.util.Patterns
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
 class MainViewModel : ViewModel() {
 
@@ -77,6 +79,15 @@ class MainViewModel : ViewModel() {
 
     fun deleteLoginError() {
         _loginError.value = null
+    }
+
+    fun isValidEmail(email: String): Boolean {
+        val pattern: Pattern = Patterns.EMAIL_ADDRESS
+        return pattern.matcher(email).matches()
+    }
+
+    fun isValidPassword(password: String): Boolean {
+        return password.length >= 6
     }
 
 
