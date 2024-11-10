@@ -8,13 +8,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,7 +33,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +64,8 @@ fun Login(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+    var isVisiblePassword by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loginError.flowWithLifecycle(lifecycleOwner.lifecycle, Lifecycle.State.STARTED)
@@ -90,12 +101,15 @@ fun Login(
     ) {
 
         Text(
-            text = "Hello $loginState!", textAlign = TextAlign.Start,
-            modifier = Modifier.align(Alignment.Start)
+            text = "로그인", textAlign = TextAlign.Start,
+            modifier = Modifier.align(Alignment.Start),
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
 
-        TextField(
+        OutlinedTextField(
             value = email,
             onValueChange = {
                 email = it
@@ -104,7 +118,17 @@ fun Login(
             label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
-            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") }
+            leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") },
+            textStyle = TextStyle(
+                color = Color(0xFF359739),
+                fontSize = 20.sp,
+            ),
+            trailingIcon = {
+                IconButton(onClick = { email = "" }) {
+                    Icon(imageVector = Icons.Filled.Clear, contentDescription = null)
+                }
+            },
+            shape = CutCornerShape(12.dp)
         )
 
         if (!isValidEmail) {
@@ -119,7 +143,7 @@ fun Login(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        TextField(
+        OutlinedTextField(
             value = password,
             onValueChange = {
                 password = it
@@ -129,7 +153,23 @@ fun Login(
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = if (isVisiblePassword) VisualTransformation.None else PasswordVisualTransformation(),
+            trailingIcon = {
+                val image =
+                    if (isVisiblePassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff
+
+                IconButton(onClick = { isVisiblePassword = !isVisiblePassword }) {
+                    Icon(
+                        imageVector = image,
+                        contentDescription = null
+                    )
+                }
+            },
+            textStyle = TextStyle(
+                color = Color(0xFF359739),
+                fontSize = 20.sp,
+            ),
+            shape = CutCornerShape(12.dp),
         )
 
         if (!isValidPassword) {
@@ -149,7 +189,8 @@ fun Login(
                 viewModel.login(email, password)
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = isValidEmail && isValidPassword
+            enabled = isValidEmail && isValidPassword,
+            shape = CutCornerShape(12.dp)
         ) {
             Text(text = "로그인", fontSize = 20.sp)
         }
@@ -159,7 +200,8 @@ fun Login(
         Button(
             onClick = { navController.navigate("signup") },
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF359739)),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            shape = CutCornerShape(12.dp)
         ) {
             Text(text = "회원가입", fontSize = 20.sp)
         }
