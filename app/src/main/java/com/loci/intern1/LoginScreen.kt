@@ -23,9 +23,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -44,6 +46,8 @@ fun Login(
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isValidEmail by remember { mutableStateOf(true) }
+    var isValidPassword by remember { mutableStateOf(true) }
 
     LaunchedEffect(loginError) {
         loginError?.let { message ->
@@ -75,24 +79,50 @@ fun Login(
 
         TextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                email = it
+                isValidEmail = viewModel.isValidEmail(email)
+            },
             label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             leadingIcon = { Icon(imageVector = Icons.Default.Email, contentDescription = "") }
         )
 
+        if (!isValidEmail) {
+            Text(
+                text = "유효한 이메일 형식이 아닙니다.",
+                color = Color.Red,
+                modifier = Modifier
+                    .align(Alignment.Start),
+                fontSize = 12.sp
+            )
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         TextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = {
+                password = it
+                isValidPassword = viewModel.isValidPassword(password)
+            },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             leadingIcon = { Icon(imageVector = Icons.Default.Lock, contentDescription = "") },
             visualTransformation = PasswordVisualTransformation()
         )
+
+        if (!isValidPassword) {
+            Text(
+                text = "비밀번호는 최소 6자 이상이어야 합니다",
+                color = Color.Red,
+                modifier = Modifier
+                    .align(Alignment.Start),
+                fontSize = 12.sp
+            )
+        }
 
         Spacer(modifier = Modifier.height(36.dp))
 
