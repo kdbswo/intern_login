@@ -31,7 +31,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 
@@ -44,19 +47,23 @@ fun Login(
     val loginState = viewModel.auth?.currentUser != null
 
     val loginSuccess by viewModel.loginSuccess.collectAsStateWithLifecycle()
-    val loginError by viewModel.loginError.collectAsStateWithLifecycle()
     val isValidEmail by viewModel.isValidEmail.collectAsStateWithLifecycle()
     val isValidPassword by viewModel.isValidPassword.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    LaunchedEffect(loginError) {
-        loginError?.let { message ->
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-            viewModel.deleteLoginError()
-
+    LaunchedEffect(Unit) {
+        viewModel.loginError.flowWithLifecycle(
+            lifecycleOwner.lifecycle,
+            Lifecycle.State.STARTED
+        ).collect { message ->
+            message?.let {
+                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
