@@ -42,12 +42,12 @@ fun Login(
 
     val loginSuccess by viewModel.loginSuccess.collectAsStateWithLifecycle()
     val loginError by viewModel.loginError.collectAsStateWithLifecycle()
+    val isValidEmail by viewModel.isValidEmail.collectAsStateWithLifecycle()
+    val isValidPassword by viewModel.isValidPassword.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var isValidEmail by remember { mutableStateOf(true) }
-    var isValidPassword by remember { mutableStateOf(true) }
 
     LaunchedEffect(loginError) {
         loginError?.let { message ->
@@ -81,7 +81,7 @@ fun Login(
             value = email,
             onValueChange = {
                 email = it
-                isValidEmail = viewModel.isValidEmail(email)
+                viewModel.isValidEmail(email)
             },
             label = { Text(text = "Email") },
             modifier = Modifier.fillMaxWidth(),
@@ -105,7 +105,7 @@ fun Login(
             value = password,
             onValueChange = {
                 password = it
-                isValidPassword = viewModel.isValidPassword(password)
+                viewModel.isValidPassword(password)
             },
             label = { Text("Password") },
             modifier = Modifier.fillMaxWidth(),
@@ -130,7 +130,8 @@ fun Login(
             onClick = {
                 viewModel.login(email, password)
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = isValidEmail && isValidPassword
         ) {
             Text(text = "로그인")
         }

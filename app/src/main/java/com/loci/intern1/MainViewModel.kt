@@ -33,6 +33,13 @@ class MainViewModel : ViewModel() {
     private val _signUpSuccess = MutableStateFlow(false)
     val signUpSuccess: StateFlow<Boolean> = _signUpSuccess
 
+    private val _isValidEmail = MutableStateFlow(true)
+    val isValidEmail: StateFlow<Boolean> = _isValidEmail
+
+    private val _isValidPassword = MutableStateFlow(true)
+    val isValidPassword: StateFlow<Boolean> = _isValidPassword
+
+
     init {
         auth = FirebaseAuth.getInstance()
     }
@@ -97,13 +104,13 @@ class MainViewModel : ViewModel() {
         _loginError.value = null
     }
 
-    fun isValidEmail(email: String): Boolean {
+    fun isValidEmail(email: String) {
         val pattern: Pattern = Patterns.EMAIL_ADDRESS
-        return pattern.matcher(email).matches()
+        _isValidEmail.value = pattern.matcher(email).matches()
     }
 
-    fun isValidPassword(password: String): Boolean {
-        return password.length >= 6
+    fun isValidPassword(password: String) {
+        _isValidPassword.value = password.length >= 6
     }
 
     private fun convertErrorMessage(message: String?): String {
