@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -84,8 +85,10 @@ fun Login(
     ) {
 
         Text(
-            text = "Hello $loginState!",
+            text = "Hello $loginState!", textAlign = TextAlign.Start,
+            modifier = Modifier.align(Alignment.Start)
         )
+
 
         TextField(
             value = email,
@@ -143,16 +146,17 @@ fun Login(
             modifier = Modifier.fillMaxWidth(),
             enabled = isValidEmail && isValidPassword
         ) {
-            Text(text = "로그인")
+            Text(text = "로그인", fontSize = 20.sp)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = { navController.navigate("signup") },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF359739)),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "회원가입")
+            Text(text = "회원가입", fontSize = 20.sp)
         }
 
     }

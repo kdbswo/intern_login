@@ -2,6 +2,7 @@ package com.loci.intern1
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,7 +78,14 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(text = "회원가입")
+        Text(
+            text = "회원가입",
+            modifier = Modifier.align(Alignment.Start),
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        Spacer(modifier = Modifier.height(30.dp))
 
         TextField(
             value = email,
@@ -129,18 +139,27 @@ fun SignUpScreen(
         Button(
             onClick = {
                 viewModel.signUp(email, password)
-                if (signUpSuccess) {
-                    navController.navigate("login") {
-                        popUpTo("signup") { inclusive = true }
-                    }
-                }
-
             },
+            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF359739)),
             modifier = Modifier.fillMaxWidth(),
             enabled = isValidEmail && isValidPassword
         ) {
-            Text(text = "회원가입")
+            Text(text = "회원가입 하기", fontSize = 20.sp)
         }
+
+        Spacer(modifier = Modifier.height(36.dp))
+
+        Text(
+            text = "로그인으로 돌아가기", modifier = Modifier
+                .clickable {
+                    navController.navigate("login") {
+                        popUpTo("signUp") { inclusive = true }
+                    }
+                },
+            color = Color.Gray,
+            fontSize = 16.sp
+        )
+
     }
 }
 
