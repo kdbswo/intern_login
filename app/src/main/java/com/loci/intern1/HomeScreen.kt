@@ -7,23 +7,43 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.loci.intern1.ui.theme.Intern1Theme
 
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(
+    viewModel: HomeViewModel = viewModel(),
+    navController: NavHostController
+) {
+
+    val isLogin by viewModel.isLogin.collectAsStateWithLifecycle()
+
+    LaunchedEffect(isLogin) {
+        if (!isLogin) {
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
 
-        Text(text = "Home")
-        Button(onClick = { /*TODO*/ }) {
+        Text(text = "$isLogin")
+        Button(
+            onClick = { viewModel.logout() }
+        ) {
             Text(text = "로그아웃")
         }
     }
@@ -36,6 +56,6 @@ fun HomePreview() {
     Intern1Theme {
         val navController = rememberNavController()
 
-        HomeScreen(navController)
+        HomeScreen(navController = navController)
     }
 }
