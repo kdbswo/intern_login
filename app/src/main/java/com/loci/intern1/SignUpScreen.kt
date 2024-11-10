@@ -59,6 +59,14 @@ fun SignUpScreen(
         }
     }
 
+    LaunchedEffect(signUpSuccess) {
+        if (signUpSuccess) {
+            navController.navigate("login") {
+                popUpTo("signup") { inclusive = true }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()

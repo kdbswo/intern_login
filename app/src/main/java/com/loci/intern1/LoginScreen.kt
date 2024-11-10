@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -59,6 +61,14 @@ fun Login(
 
     LaunchedEffect(loginSuccess) {
         if (loginSuccess) {
+            navController.navigate("home") {
+                popUpTo("login") { inclusive = true }
+            }
+        }
+    }
+
+    LaunchedEffect(loginState) {
+        if (loginState) {
             navController.navigate("home") {
                 popUpTo("login") { inclusive = true }
             }
